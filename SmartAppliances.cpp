@@ -20,10 +20,6 @@ char* strToCharArray (string str) {
   return cstr;
 }
 
-string getInput() {
-
-}
-
 int charArrayToInteger(const char* value) {
 	stringstream strValue;
 	strValue << value;
@@ -44,7 +40,7 @@ int getIntegerFromInput(string display) {
 			cin.clear();
 			string dummy;
 	  	cin >> dummy; // throw away garbage.
-			cout << "\nInvalid input type. Please insert a valid number.\n\n";
+			cout << "\nERROR: Entered input is not an integer.\n\n";
 			continue;
 			}
 
@@ -54,59 +50,85 @@ int getIntegerFromInput(string display) {
 	}
 }
 
-// void SetStdinEcho(bool enable)
-// {
-// #ifdef WIN32
-//     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
-//     DWORD mode;
-//     GetConsoleMode(hStdin, &mode);
-
-//     if( !enable )
-//         mode &= ~ENABLE_ECHO_INPUT;
-//     else
-//         mode |= ENABLE_ECHO_INPUT;
-
-//     SetConsoleMode(hStdin, mode );
-
-// #else
-//     struct termios tty;
-//     tcgetattr(STDIN_FILENO, &tty);
-//     if( !enable )
-//         tty.c_lflag &= ~ECHO;
-//     else
-//         tty.c_lflag |= ECHO;
-
-//     (void) tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-// #endif
-// }
-
-void addDeviceToDBS(xml_node domobus) {
-	string deviceName;
-	string password;
-	int accesLevel;
-	cout << "Please enter the device name: ";
-	cin >> deviceName;
-	cout << "Please enter the dsired password for user " + username + ": ";
-	// SetStdinEcho(false);
-	cin >> password;
-	// SetStdinEcho(true);
+void setValueType(xml_node property){
+	string valueType;
 	while(true) {
-		accesLevel = getIntegerFromInput("Please enter the access level for user " + username + ": ");
-		if(accesLevel >= 1 && accesLevel <= 10)
+		cout << "Enter a value type [SCALAR, ENUM, ARRAY or USERID]: ";
+		cin >> valueType;
+		if(!valueType.compare("SCALAR")){
+			cout << "\n\nSCALAR\n\n";
 			break;
+		}
+		else if(!valueType.compare("ENUM")){
+			cout << "\n\nENUM\n\n";
+			break;
+		}
+		else if(!valueType.compare("ARRAY")){
+			cout << "\n\nARRAY\n\n";
+			break;
+		}
+		else if(!valueType.compare("USERID")){
+			cout << "\n\nUSERID\n\n";
+			break;
+		}
 		else {
-			cout << "Invalid access level. Please input a value between 1 and 10, inclusive.\n\n";
+			cout << "\nERROR: Value type non-existent.\n\n";
 			continue;
 		}
 	}
-	// add node with name User
-	xml_node ul = domobus.child("UserList");
-	xml_node user = ul.append_child();
-	user.set_name("User");
-	user.append_attribute("ID") = ++userIDCounter;
-	user.append_attribute("Name") = strToCharArray(username);
-	user.append_attribute("Password") = strToCharArray(password);
-	user.append_attribute("AccessLevel") = accesLevel;
+}
+
+void addDeviceToDBS(xml_node domobus) {
+
+	xml_node dtl = domobus.child("DeviceTypeList");
+	xml_node device = dtl.append_child();
+	device.set_name("DeviceType");
+	device.append_attribute("ID") = ++deviceIDCounter;
+
+	string deviceName;
+	string description;
+	string dummy;
+	getline(cin, dummy);
+	cout << "Please enter the device name: ";
+	getline(cin, deviceName);
+	device.append_attribute("Name") = strToCharArray(deviceName);
+	
+	cout << "Please enter a description for the device " + deviceName + ": ";
+	getline(cin, description);
+	device.append_attribute("Description") = strToCharArray(description);
+	
+	int propCounter = -1;
+	int optionSelected = 0;
+
+	xml_node ptl = device.append_child();
+	ptl.set_name("PropertyTypeList");
+	// Add one or more properties to device
+	while(true) {
+		optionSelected = getIntegerFromInput("\n1.1.[1] Add Property to Device\n1.1.[2] Finish\n\n1.1.[0] Cancel and go back\n\nSelect an option: ");
+		if(optionSelected == 1) {
+			xml_node property = ptl.append_child();
+			property.set_name("PropertyType");
+			property.append_attribute("ID") = ++propCounter;
+			setValueType(property);
+			break;
+		}
+		else if(optionSelected == 2) {
+			if(propCounter < 0) {
+				cout << "ERROR: The device must have AT LEAST ONE property.\n";
+				continue;
+			}
+			else
+				break;
+		}
+		else if(optionSelected == 0) {
+			dtl.remove_child(device);
+			break;
+		}
+		else {
+			cout << "ERROR: Please select a valid option (one of the numbers between [] ).\n";
+		}
+	}
+	
 	doc.save_file(strToCharArray(specFilename));
 }
 
@@ -115,16 +137,16 @@ void addDeviceToDBS(xml_node domobus) {
 void addUserToDBS(xml_node domobus) {
 	string username;
 	string password;
-	int accesLevel;
+	int accessLevel;
 	cout << "Please enter the desired username: ";
 	cin >> username;
-	cout << "Please enter the dwsired password for user " + username + ": ";
+	cout << "Please enter the desired password for user " + username + ": ";
 	// SetStdinEcho(false);
 	cin >> password;
 	// SetStdinEcho(true);
 	while(true) {
-		accesLevel = getIntegerFromInput("Please enter the access level for user " + username + ": ");
-		if(accesLevel >= 1 && accesLevel <= 10)
+		accessLevel = getIntegerFromInput("Please enter the access level for user " + username + " [1-10]: ");
+		if(accessLevel >= 1 && accessLevel <= 10)
 			break;
 		else {
 			cout << "Invalid access level. Please input a value between 1 and 10, inclusive.\n\n";
@@ -138,7 +160,13 @@ void addUserToDBS(xml_node domobus) {
 	user.append_attribute("ID") = ++userIDCounter;
 	user.append_attribute("Name") = strToCharArray(username);
 	user.append_attribute("Password") = strToCharArray(password);
-	user.append_attribute("AccessLevel") = accesLevel;
+	user.append_attribute("AccessLevel") = accessLevel;
+	xml_node uidvtl = domobus.child("UserIDValueTypeList");
+	user = uidvtl.append_child();
+	user.set_name("UserIDValueType");
+	user.append_attribute("ID") = userIDCounter;
+	user.append_attribute("RefUser") = userIDCounter;
+	user.append_attribute("UserName") = strToCharArray(username);
 	doc.save_file(strToCharArray(specFilename));
 }
 
@@ -152,7 +180,7 @@ void manageDomoBusSystem(xml_node domobus) {
 					addUserToDBS(domobus);
 					break;
 				case 2:
-					cout << "ADDING DEVICE..............";
+					addDeviceToDBS(domobus);
 					break;
 				case 0:
 					return;
@@ -169,9 +197,9 @@ int main(int argc, char* argv[])
 	if(argc > 1)
 		docToLoad = strToCharArray(argv[1]);
 	else
-		docToLoad = strToCharArray("dbspec.xml");
+		docToLoad = strToCharArray(specFilename);
 
-	xml_parse_result result = doc.load_file(docToLoad);
+	xml_parse_result result = doc.load_file(docToLoad, pugi::parse_full);
 
 	string nerr = "No error";
 	if(nerr.compare(result.description())) 
