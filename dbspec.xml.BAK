@@ -1,0 +1,395 @@
+
+<!-- DomoBus System Specification Language -->
+
+<!-- v1.4  31/10/2014 -->
+
+
+<DomoBusSystem ID="0" Name="SmartAppliances" Type="Scenarios Driven DomoBusSystem Specification Extension" Version="1.7" Date="28/11/2014">
+
+	 <!-- Notes:
+	  "Type" may be used to distinguish between different approaches with
+	 different capabilities. For example, if the specification includes icons
+	 for the device types, if it includes "Favourites", if details a graphical
+	 user interface, etc.
+	  "Version" and "Date" refer to the specification version of an actual
+	 system and corresponding date. If one adds devices to the system or does
+	 other changes, a new version and date should be used.
+	-->
+
+
+	<!-- Global definitions of a DomoBus system ----------------------------- -->
+
+
+	<!-- Device Classes -->
+	<!-- May be used to organize devices types accordingly with their function -->
+
+	<DeviceClassList>
+		<DeviceClass ID="#" Name="x" />
+	</DeviceClassList>
+
+
+
+	<!-- Value conversion -->
+
+	<ConversionFormulaList>
+		<ConversionFormula ID="#" Name="x" UserToSystem="x" SystemToUser="x" DecimalPlaces="#" />
+	</ConversionFormulaList>
+
+	<ConversionObjectList>
+		<ConversionObject ID="#" Name="x" UserToSystemObj="#" SystemToUserObj="#" DecimalPlaces="#" />
+	</ConversionObjectList>
+
+
+
+	<!-- Property Types -->
+
+	<ScalarValueTypeList>			<!-- NumBits: 8 or 16 -->
+		<ScalarValueType ID="#" Name="x" NumBits="#" Units="x" MinValue="#" MaxValue="#" Step="#">
+			<ValueConversion Type="x" Ref="#" />
+			<!-- Type: "FORMULA" or "OBJECT" -->
+		</ScalarValueType>
+	</ScalarValueTypeList>
+
+	<EnumValueTypeList>
+		<!-- Returning state indicates the robot is returning to the dock station -->
+		<EnumValueType ID="0" Name="On/Off/Returning State">
+			<Enumerated Name="Off" Value="0" />
+			<Enumerated Name="On" Value="1" />
+			<Enumerated Name="Returning" Value="2" />
+		</EnumValueType>
+		<EnumValueType ID="1" Name="On/Off State">
+			<Enumerated Name="Off" Value="0" />
+			<Enumerated Name="On" Value="1" />
+		</EnumValueType>
+		<EnumValueType ID="2" Name="Person Presence/Absence State">
+			<Enumerated Name="Absent" Value="0" />
+			<Enumerated Name="Present" Value="1" />
+		</EnumValueType>
+		<EnumValueType ID="3" Name="Dust Presence/Absence State">
+			<Enumerated Name="Absent" Value="0" />
+			<Enumerated Name="Present" Value="1" />
+		</EnumValueType>
+	</EnumValueTypeList>
+
+	<ArrayValueTypeList>
+		<ArrayValueType ID="#" Name="x" MaxLen="x">
+			<ValueConversion Type="OBJECT" Ref="#" />
+		</ArrayValueType>
+	</ArrayValueTypeList>
+
+	<UserIDValueTypeList>
+		<UserIDValueType ID="0" RefUser="0" UserName="x" Active="#" /> 
+		<UserIDValueType ID="1" RefUser="1" UserName="x" Active="#"/> 
+	</UserIDValueTypeList>
+
+
+
+	<!-- Device Types -->
+
+	<DeviceTypeList>
+		<DeviceType ID="0" Name="Washing Machine" RefDeviceClass="#" Description="Generic Washing Machine">
+			<PropertyTypeList>
+				<PropertyType ID="0" Name="On/Off State" AccessMode="x" ValueType="ENUM" RefValueType="1" />
+				<!-- ValueType: "SCALAR", "ENUM", "ARRAY" or "USERID" -->
+			</PropertyTypeList>
+		</DeviceType>
+		<DeviceType ID="1" Name="Drying Machine" RefDeviceClass="#" Description="Generic Drying Machine">
+			<PropertyTypeList>
+				<PropertyType ID="0" Name="On/Off State" AccessMode="x" ValueType="ENUM" RefValueType="1" />
+			</PropertyTypeList>
+		</DeviceType>
+
+		<DeviceType ID="2" Name="Sensor" RefDeviceClass="#" Description="Generic Sensor">
+			<PropertyTypeList>
+				<PropertyType ID="0" Name="On/Off State" AccessMode="x" ValueType="ENUM" RefValueType="1" />
+			</PropertyTypeList>
+		</DeviceType>
+
+		<DeviceType ID="3" Name="Vacuum Cleaner" RefDeviceClass="#" Description="Generic Vacuum Cleaner">
+			<PropertyTypeList>
+				<PropertyType ID="0" Name="On/Off State" AccessMode="x" ValueType="ENUM" RefValueType="1" />
+			</PropertyTypeList>
+		</DeviceType>
+
+
+	</DeviceTypeList>
+
+
+
+
+	<!-- Specification of an actual DomoBus system ------------------------- -->
+
+
+
+	<!-- Access levels -->
+
+	<AccessLevelList>
+		<AccessLevel Level="10" Name="Admin" />
+		<AccessLevel Level="9" Name="Owner" />
+		<AccessLevel Level="1" Name="Guest" />
+	</AccessLevelList>
+
+
+
+	<!-- Users -->
+
+	<UserList>
+		<User ID="0" Name="Chandler" Password="J0ker" AccessLevel="9" />
+		<User ID="1" Name="Monica" Password="Cl3an" AccessLevel="10" />
+	</UserList>
+
+
+
+	<!-- House or building structure -->
+	<!-- ATT: Division ids are global to a given house or building -->
+	<!-- See below an alternative way to specify a house or building -->
+
+
+	<House ID="0" Name="Home" Address="Neverland Street" Phone="1234567890">
+		<FloorList>
+			<Floor ID="0" Name="Ground Floor" HeightOrder="0">
+				<DivisionList>
+					<Division ID="0" Name="Lounge" AccessLevel="1" />
+					<Division ID="1" Name="Kitchen" AccessLevel="1" />
+					<Division ID="2" Name="Bedroom" AccessLevel="1" />
+					<Division ID="3" Name="Bathroom" AccessLevel="1" />
+				</DivisionList>
+			</Floor>
+		</FloorList>
+	</House>
+
+	  <!-- Alternative way :
+
+	  <House ID="#" Name="x" Address="x" Phone="x">
+		<FloorList>
+			<Floor ID="#" Name="x" HeightOrder="#"/>
+		</FloorList>
+		<DivisionList>
+			<Division ID="#" Name="x" RefFloor="#" AccessLevel="#" />
+		</DivisionList>
+	  </House>
+
+	-->
+
+
+
+	<!-- Services -->
+
+	<ServiceList>
+		<Service ID="#" Name="x" />
+	</ServiceList>
+
+
+
+	<!-- Devices -->
+
+	<DeviceList>
+		<Device ID="0" RefDeviceType="0" Name="Laundry Machine" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+				<!-- ValueType: "SCALAR", "ENUM", "ARRAY" or "USERID" -->
+			</DeviceSpecificPropertyList>
+			<DeviceServiceList>
+				<DeviceService RefService="#" />
+			</DeviceServiceList>
+		</Device>
+
+		<Device ID="1" RefDeviceType="0" Name="Dish Washer Machine" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="2" RefDeviceType="1" Name="Clothes Dryer Machine" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="3" RefDeviceType="2" Name="Kitchen Dust Sensor" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="4" RefDeviceType="2" Name="Lounge Dust Sensor" Address="#" RefDivision="0" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="5" RefDeviceType="2" Name="Bedroom Dust Sensor" Address="#" RefDivision="2" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="6" RefDeviceType="3" Name="Robot Vacuum Cleaner" Address="#" RefDivision="3" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="7" RefDeviceType="2" Name="Lounge User Sensor" Address="#" RefDivision="0" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="8" RefDeviceType="2" Name="Kitchen User Sensor" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="9" RefDeviceType="2" Name="Bedroom User Sensor" Address="#" RefDivision="2" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+		<Device ID="10" RefDeviceType="2" Name="Bathroom User Sensor" Address="#" RefDivision="4" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+			</DeviceSpecificPropertyList>
+		</Device>
+
+	</DeviceList>
+
+
+
+
+
+	<!-- OPTIONAL --------------------------------------------- -->
+
+
+	<!-- Scenes -->   <!-- ATT: Previsously was known as "Macros" -->
+
+	<SceneList>
+		<Scene ID="#" Name="x">
+			<ActionList>
+				<Action ID="#" RefDevice="#" RefProperty="#" Value="x" />
+			</ActionList>
+		</Scene>
+	</SceneList>
+
+
+	<!-- Favourites (devices or divisions used more often) -->
+	<!-- Each user can have his list of favourites -->
+
+	<Favourites>
+		<FavouriteList RefUser="#">
+			<FavouriteDevice RefDevice="#" />
+			<FavouriteDivision RefDivision="#" />
+		</FavouriteList>
+	</Favourites>
+
+
+	<!-- System state -->
+	<!--  This can be used to store a system state, typically in a
+	  simulated environment; in an actual system, current state is retrieved
+	  directly from the devices -->
+
+	<DeviceStateList>
+	  	<DeviceState RefDevice="#" RefProperty="#" Value="x" OperationalStatus="#" />
+	</DeviceStateList>
+
+
+	<!-- DOW representes the days of the week, being its representation binary in the sense that it is done using 7 bits: DOW=”Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday" 
+	(i.e. if we want to select Tuesdays, Thursdays and Saturdays all we have to do is DOW="0|0|1|0|1|0|1") -->
+
+	<ActivityScenarioList>
+		
+		<ActivityScenario ID="0" Name="Robot Vacuum Cleaner" Description="x">
+			<PreCondition Time="#" DOW="0|0|1|0|1|0|1">
+				<DeviceStateList>
+					<DeviceState RefDevice="3" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="4" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="5" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="6" RefProperty="0" Value="1" />
+				</DeviceStateList>
+			</PreCondition>
+			<ActivationCondition Time="0900" DOW="#">
+				<DeviceStateList>
+					<DeviceState RefDevice="7" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="8" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="8" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="9" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="9" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="10" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="10" RefProperty="1" Value="0" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="3" RefProperty="0" Value="1" />
+				</ActionList>
+			</ActivationCondition>
+			<StoppageCondition Time="1200" DOW="#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="3" RefProperty="0" Value="0" />
+				</ActionList>
+			</StoppageCondition>
+			<ExceptionCondition>
+				<DeviceStateList>
+					<DeviceState RefDevice="7" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="8" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="8" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="9" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="9" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="10" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="10" RefProperty="1" Value="1" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="3" RefProperty="0" Value="0" />
+				</ActionList>
+			</ExceptionCondition>			
+		</ActivityScenario>
+
+		<ActivityScenario ID="#" Name="x" Description="x">
+			<PreCondition Time="#" DOW="#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+			</PreCondition>
+			<ActivationCondition Time="#" DOW="#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="#" RefProperty="#" Value="#" />
+				</ActionList>
+			</ActivationCondition>
+			<StoppageCondition Time="#" DOW="#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="#" RefProperty="#" Value="#" />
+				</ActionList>
+			</StoppageCondition>
+			<ExceptionCondition>
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="#" RefProperty="#" Value="#" />
+				</ActionList>
+			</ExceptionCondition>			
+		</ActivityScenario>
+
+	</ActivityScenarioList>
+
+
+
+
+
+</DomoBusSystem>
+
