@@ -25,6 +25,7 @@ public:
 	int getRefDeviceType();
 	int getRefDivision();
 	bool isActive();
+	int getCounter();
 
 	void setCounter(int c);
 	void incCounter();

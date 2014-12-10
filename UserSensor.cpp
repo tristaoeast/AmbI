@@ -22,6 +22,10 @@ bool UserSensor::isActive() {
 	return _active;
 }
 
+int UserSensor::getCounter() {
+	return _counter;
+}
+
 void UserSensor::setCounter(int c) {
 	_counter = c;
 }
