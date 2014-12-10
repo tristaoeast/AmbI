@@ -78,8 +78,8 @@
 	</ArrayValueTypeList>
 
 	<UserIDValueTypeList>
-		<UserIDValueType ID="0" RefUser="0" UserName="x" Active="#" /> 
-		<UserIDValueType ID="1" RefUser="1" UserName="x" Active="#"/> 
+		<UserIDValueType ID="0" RefUser="0" UserName="x" /> 
+		<UserIDValueType ID="1" RefUser="1" UserName="x" /> 
 	</UserIDValueTypeList>
 
 

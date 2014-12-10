@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- DomoBus System Specification Language -->
 <!-- v1.4  31/10/2014 -->
-<DomoBusSystem ID="0" Name="SmartAppliances" Type="Scenarios Driven DomoBusSystem Specification Extension" Version="1.7" Date="28/11/2014">
+<DomoBusSystem ID="0" Name="SmartAppliances" Type="Scenarios Driven DomoBusSystem Specification Extension" Version="1.13" Date="28/11/2014">
 	<!-- Notes:
 	  "Type" may be used to distinguish between different approaches with
 	 different capabilities. For example, if the specification includes icons
@@ -55,6 +55,14 @@
 			<Enumerated Name="Absent" Value="0" />
 			<Enumerated Name="Present" Value="1" />
 		</EnumValueType>
+		<EnumValueType ID="4" Name="Loaded/NotLoaded State">
+			<Enumerated Name="Not Loaded" Value="0" />
+			<Enumerated Name="Loaded" Value="1" />
+		</EnumValueType>
+		<EnumValueType ID="5" Name="Door State">
+			<Enumerated Name="Closed" Value="0" />
+			<Enumerated Name="Open" Value="1" />
+		</EnumValueType>
 	</EnumValueTypeList>
 	<ArrayValueTypeList>
 		<ArrayValueType ID="#" Name="x" MaxLen="x">
@@ -70,12 +78,16 @@
 		<DeviceType ID="0" Name="Washing Machine" RefDeviceClass="#" Description="Generic Washing Machine">
 			<PropertyTypeList>
 				<PropertyType ID="0" Name="On/Off State" AccessMode="RW" ValueType="ENUM" RefValueType="1" />
+				<PropertyType ID="1" Name="Loaded/Not Loaded State" AccessMode="RO" ValueType="ENUM" RefValueType="4" />
+				<PropertyType ID="2" Name="Door State" AccessMode="RO" ValueType="ENUM" RefValueType="5" />
 				<!-- ValueType: "SCALAR", "ENUM", "ARRAY" or "USERID" -->
 			</PropertyTypeList>
 		</DeviceType>
 		<DeviceType ID="1" Name="Drying Machine" RefDeviceClass="#" Description="Generic Drying Machine">
 			<PropertyTypeList>
 				<PropertyType ID="0" Name="On/Off State" AccessMode="RW" ValueType="ENUM" RefValueType="1" />
+				<PropertyType ID="1" Name="Loaded/NotLoaded State" AccessMode="RO" ValueType="ENUM" RefValueType="4" />
+				<PropertyType ID="2" Name="Door State" AccessMode="RO" ValueType="ENUM" RefValueType="5" />				
 			</PropertyTypeList>
 		</DeviceType>
 		<DeviceType ID="2" Name="Sensor" RefDeviceClass="#" Description="Generic Sensor">
@@ -86,6 +98,12 @@
 		<DeviceType ID="3" Name="Vacuum Cleaner" RefDeviceClass="#" Description="Generic Vacuum Cleaner">
 			<PropertyTypeList>
 				<PropertyType ID="0" Name="On/Off State" AccessMode="RW" ValueType="ENUM" RefValueType="1" />
+			</PropertyTypeList>
+		</DeviceType>
+		<DeviceType ID="4" Name="Lamp" RefDeviceClass="#" Description="Generic Lamp">
+			<PropertyTypeList>
+				<PropertyType ID="0" Name="On/Off State" AccessMode="RW" ValueType="ENUM" RefValueType="1" />
+				<PropertyType ID="1" Name="Brightness" AccessMode="RW" ValueType="SCALAR" RefValueType="0" />
 			</PropertyTypeList>
 		</DeviceType>
 	</DeviceTypeList>
@@ -175,26 +193,31 @@
 		</Device>
 		<Device ID="7" RefDeviceType="2" Name="Lounge User Sensor" Address="#" RefDivision="0" AccessLevel="#,#" UserBlocked="#,#">
 			<DeviceSpecificPropertyList>
-				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
-				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+				<DeviceSpecificProperty ID="1" Name="Chandler Presence" AccessMode="RO" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="2" Name="Monica Presence" AccessMode="RO" ValueType="USERID" RefValueType="1" />
 			</DeviceSpecificPropertyList>
 		</Device>
 		<Device ID="8" RefDeviceType="2" Name="Kitchen User Sensor" Address="#" RefDivision="1" AccessLevel="#,#" UserBlocked="#,#">
 			<DeviceSpecificPropertyList>
-				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
-				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+				<DeviceSpecificProperty ID="1" Name="Chandler Presence" AccessMode="RO" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="2" Name="Monica Presence" AccessMode="RO" ValueType="USERID" RefValueType="1" />
 			</DeviceSpecificPropertyList>
 		</Device>
 		<Device ID="9" RefDeviceType="2" Name="Bedroom User Sensor" Address="#" RefDivision="2" AccessLevel="#,#" UserBlocked="#,#">
 			<DeviceSpecificPropertyList>
-				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
-				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+				<DeviceSpecificProperty ID="1" Name="Chandler Presence" AccessMode="RO" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="2" Name="Monica Presence" AccessMode="RO" ValueType="USERID" RefValueType="1" />
 			</DeviceSpecificPropertyList>
 		</Device>
 		<Device ID="10" RefDeviceType="2" Name="Bathroom User Sensor" Address="#" RefDivision="4" AccessLevel="#,#" UserBlocked="#,#">
 			<DeviceSpecificPropertyList>
-				<DeviceSpecificProperty ID="0" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="0" />
-				<DeviceSpecificProperty ID="1" Name="User Presence" AccessMode="x" ValueType="USERID" RefValueType="1" />
+				<DeviceSpecificProperty ID="1" Name="Chandler Presence" AccessMode="RO" ValueType="USERID" RefValueType="0" />
+				<DeviceSpecificProperty ID="2" Name="Monica Presence" AccessMode="RO" ValueType="USERID" RefValueType="1" />
+			</DeviceSpecificPropertyList>
+		</Device>
+		<Device ID="11" RefDeviceType="4" Name="Lounge Ceiling Lamp" Address="#" RefDivision="0" AccessLevel="#,#" UserBlocked="#,#">
+			<DeviceSpecificPropertyList>
+				<DeviceSpecificProperty ID="#" Name="x" AccessMode="x" ValueType="x" RefValueType="#" />
 			</DeviceSpecificPropertyList>
 		</Device>
 	</DeviceList>
@@ -235,22 +258,26 @@
 					<DeviceState RefDevice="6" RefProperty="0" Value="1" />
 				</DeviceStateList>
 			</PreCondition>
-			<ActivationCondition Time="0900" DOW="#">
+			<ActivationCondition Time="0900" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="7" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="7" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="8" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="8" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="8" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="8" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="9" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="9" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="9" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="10" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="10" RefProperty="1" Value="0" />
+					<DeviceState RefDevice="10" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="10" RefProperty="2" Value="#" />
 				</DeviceStateList>
 				<ActionList>
 					<Action RefDevice="3" RefProperty="0" Value="1" />
 				</ActionList>
 			</ActivationCondition>
-			<StoppageCondition Time="1200" DOW="#">
+			<StoppageCondition Time="1200" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
@@ -261,26 +288,111 @@
 			<ExceptionCondition>
 				<DeviceStateList>
 					<DeviceState RefDevice="7" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="7" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="8" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="8" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="8" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="8" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="9" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="9" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="9" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="10" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="10" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="10" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="10" RefProperty="2" Value="#" />
 				</DeviceStateList>
 				<ActionList>
 					<Action RefDevice="3" RefProperty="0" Value="0" />
 				</ActionList>
 			</ExceptionCondition>
 		</ActivityScenario>
+
+		<ActivityScenario ID="1" Name="Smart Washing/Drying Machines" Description="x">
+			<PreCondition Time="#" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="0" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="1" RefProperty="1" Value="1" />
+					<DeviceState RefDevice="2" RefProperty="1" Value="1" />
+				</DeviceStateList>
+			</PreCondition>
+			<ActivationCondition Time="2100" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="0" RefProperty="0" Value="1" />
+					<Action RefDevice="1" RefProperty="0" Value="1" />
+					<Action RefDevice="2" RefProperty="0" Value="1" />
+				</ActionList>
+			</ActivationCondition>
+			<StoppageCondition Time="0900" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="0" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="1" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="2" RefProperty="0" Value="0" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="0" RefProperty="0" Value="0" />
+					<Action RefDevice="1" RefProperty="0" Value="0" />
+					<Action RefDevice="2" RefProperty="0" Value="0" />
+				</ActionList>
+			</StoppageCondition>
+			<ExceptionCondition>
+				<DeviceStateList>
+					<DeviceState RefDevice="0" RefProperty="2" Value="1" />
+					<DeviceState RefDevice="1" RefProperty="2" Value="1" />
+					<DeviceState RefDevice="2" RefProperty="2" Value="1" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="0" RefProperty="0" Value="0" />
+					<Action RefDevice="1" RefProperty="0" Value="0" />
+					<Action RefDevice="2" RefProperty="0" Value="0" />
+				</ActionList>
+			</ExceptionCondition>
+		</ActivityScenario>
+
+		<ActivityScenario ID="2" Name="Smart Lounge Lightning" Description="x">
+			<PreCondition Time="#" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="7" RefProperty="0" Value="0" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
+				</DeviceStateList>
+			</PreCondition>
+			<ActivationCondition Time="1800" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="11" RefProperty="0" Value="0" />
+				</ActionList>
+			</ActivationCondition>
+			<StoppageCondition Time="0900" DOW="#|#|#|#|#|#|#">
+				<DeviceStateList>
+					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="#" RefProperty="#" Value="#" />
+				</ActionList>
+			</StoppageCondition>
+			<ExceptionCondition>
+				<DeviceStateList>
+					<DeviceState RefDevice="7" RefProperty="0" Value="1" />
+					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
+					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
+				</DeviceStateList>
+				<ActionList>
+					<Action RefDevice="11" RefProperty="0" Value="1" />
+				</ActionList>
+			</ExceptionCondition>
+		</ActivityScenario>
+
 		<ActivityScenario ID="#" Name="x" Description="x">
-			<PreCondition Time="#" DOW="#">
+			<PreCondition Time="#" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
 			</PreCondition>
-			<ActivationCondition Time="#" DOW="#">
+			<ActivationCondition Time="#" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
@@ -288,7 +400,7 @@
 					<Action RefDevice="#" RefProperty="#" Value="#" />
 				</ActionList>
 			</ActivationCondition>
-			<StoppageCondition Time="#" DOW="#">
+			<StoppageCondition Time="#" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
