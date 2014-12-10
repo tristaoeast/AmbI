@@ -12,7 +12,19 @@ using namespace pugi;
 
 int userIDCounter = 0, deviceIDCounter = 0;
 string specFilename = "dbspec.xml";
+string emptyID = "#";
+string emptyStr = "";
 xml_document doc;
+xml_node domobus;
+
+char* intToCharArray (int n) {
+	stringstream strstream;
+	strstream << (n);
+	string str = strstream.str();
+	char * cstr = new char[str.length()+1];
+	strcpy(cstr, str.c_str());
+	return cstr;
+}
 
 char* strToCharArray (string str) {
 	char * cstr = new char [str.length()+1];
@@ -50,29 +62,85 @@ int getIntegerFromInput(string display) {
 	}
 }
 
-void setValueType(xml_node property){
-	string valueType;
+bool displayChildNodesForSelection(xml_node parent, string options, int &lastID){
+	// xml_node svtl = domobus.child("ScalarValueTypeList");
+	bool hasChildren = false;
+	if((emptyID.compare(parent.first_child().attribute("ID").value())) == 0) {
+		// cout << "ERROR: No child elements defined.\n";
+		// No child nodes defined
+		return false;
+	}
+	for(xml_node child = parent.first_child(); child; child = child.next_sibling()) {
+		hasChildren = true;
+		if((emptyID.compare(child.attribute("ID").value())) != 0 && (emptyStr.compare(child.attribute("ID").value())) != 0) {
+			
+			lastID = charArrayToInteger(child.attribute("ID").value());
+			cout << options << "[" << child.attribute("ID").value() << "] " << child.name() <<":";
+
+			for(xml_attribute attr = child.first_attribute(); attr; attr = attr.next_attribute()){
+				cout << " " << attr.name() << "=" << "\"" << attr.value() << "\"";
+			}
+			cout << "\n";
+		}
+
+	}
+	return hasChildren;
+}
+
+bool chooseScalar(xml_node property){
+	int lastID = -1;
+	int optionSelected;
 	while(true) {
-		cout << "Enter a value type [SCALAR, ENUM, ARRAY or USERID]: ";
-		cin >> valueType;
-		if(!valueType.compare("SCALAR")){
+		if(displayChildNodesForSelection(domobus.child("ScalarValueTypeList"), "1.1.1.1.", lastID)) {
+			cout << "\n\n\n" << lastID << "\n\n\n";
+			optionSelected = getIntegerFromInput("Select an option: ");
+			xml_node chosenScalar = domobus.child("ScalarValueTypeList").find_child_by_attribute("ScalarValueType","ID",intToCharArray(optionSelected));
+			return true;
+		} 
+		else {
+			cout << "ERROR: No scalar types defined.";
+			return false;
+		}
+	}
+
+}
+
+bool setValueType(xml_node property){
+	// string valueType;
+	int optionSelected;
+	while(true) {
+		optionSelected = getIntegerFromInput("\n1.1.1.[1] SCALAR\n1.1.1.[2] ENUM\n1.1.1.[3] ARRAY\n1.1.1.[4] USERID\n\n1.1.1.[0] Cancel and go back\n\nSelect an option: ");
+		// cout << "Enter a value type [SCALAR, ENUM, ARRAY or USERID]: ";
+		// cin >> valueType;
+		if(optionSelected == 1){
 			cout << "\n\nSCALAR\n\n";
-			break;
+			if(chooseScalar(property)){
+				return true;
+			}else
+				break;
 		}
-		else if(!valueType.compare("ENUM")){
+		else if(optionSelected == 2){
 			cout << "\n\nENUM\n\n";
-			break;
+			return true;
+			// break;
 		}
-		else if(!valueType.compare("ARRAY")){
+		else if(optionSelected == 3){
 			cout << "\n\nARRAY\n\n";
-			break;
+			return true;
+			// break;
 		}
-		else if(!valueType.compare("USERID")){
+		else if(optionSelected == 4){
 			cout << "\n\nUSERID\n\n";
-			break;
+			return true;
+			// break;
+		}
+		else if(optionSelected == 0){
+			cout << "\n\nEXIT\n\n";
+			return false;
+			// break;
 		}
 		else {
-			cout << "\nERROR: Value type non-existent.\n\n";
+			cout << "\nERROR: Please select a valid option (one of the numbers between [] )\n\n";
 			continue;
 		}
 	}
@@ -110,7 +178,7 @@ void addDeviceToDBS(xml_node domobus) {
 			property.set_name("PropertyType");
 			property.append_attribute("ID") = ++propCounter;
 			setValueType(property);
-			break;
+			continue;
 		}
 		else if(optionSelected == 2) {
 			if(propCounter < 0) {
@@ -208,7 +276,8 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
-	xml_node domobus = doc.child("DomoBusSystem");
+	// xml_node 
+	domobus = doc.child("DomoBusSystem");
 	xml_node evtl = domobus.child("EnumValueTypeList");
 	xml_node evt = domobus.child("EnumValueType");
 	
@@ -248,15 +317,3 @@ int main(int argc, char* argv[])
 	}
 }
 
-
-
-
-
-
-//[code_load_file
-//     xml_document doc;
-
-//     xml_parse_result result = doc.load_file("tree.xml");
-
-//     cout << "Load result: " << result.description() << ", mesh name: " << doc.child("mesh").attribute("name").value() << endl;
-// //]
