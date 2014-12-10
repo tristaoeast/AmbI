@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sstream>
+#include <vector>
 #include "User.h"
+#include "Sensor.h"
+#include "VacuumCleaner.h"
+#include "UserSensor.h"
 
 using namespace std;
 using namespace pugi;
@@ -14,8 +18,10 @@ int userIDCounter = 0, deviceIDCounter = 0;
 string specFilename = "dbspec.xml";
 string emptyID = "#";
 string emptyStr = "";
+string emptyDOW = "#|#|#|#|#|#|#";
 xml_document doc;
 xml_node domobus;
+
 
 char* intToCharArray (int n) {
 	stringstream strstream;
@@ -424,6 +430,175 @@ void manageDomoBusSystem(xml_node domobus) {
 	}
 }
 
+
+void initScenario1() {
+
+	xml_node user = domobus.child("UserList").find_child_by_attribute("User","Name","Monica");
+	User *monica = new User(charArrayToInteger(user.attribute("ID").value()),
+								charArrayToString(user.attribute("Name").value()),
+								charArrayToString(user.attribute("Password").value()),
+								charArrayToInteger(user.attribute("AccessLevel").value())
+								);
+
+	user = domobus.child("UserList").find_child_by_attribute("User","Name","Chandler");
+	User *chandler = new User(charArrayToInteger(user.attribute("ID").value()),
+								charArrayToString(user.attribute("Name").value()),
+								charArrayToString(user.attribute("Password").value()),
+								charArrayToInteger(user.attribute("AccessLevel").value())
+								);
+
+	// xml_node device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","3");
+	// Sensor *kitchenDustSensor = new Sensor(charArrayToInteger(device.attribute("ID").value()),
+	// 							charArrayToInteger(device.attribute("RefDeviceType").value()),
+	// 							charArrayToString(device.attribute("Name").value()),
+	// 							charArrayToInteger(device.attribute("RefDivision").value())
+	// 							);
+	// device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","4");
+	// Sensor *loungeDustSensor = new Sensor(charArrayToInteger(device.attribute("ID").value()),
+	// 							charArrayToInteger(device.attribute("RefDeviceType").value()),
+	// 							charArrayToString(device.attribute("Name").value()),
+	// 							charArrayToInteger(device.attribute("RefDivision").value())
+	// 							);
+	xml_node device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","5");
+	Sensor *bedroomDustSensor = new Sensor(charArrayToInteger(device.attribute("ID").value()),
+								charArrayToInteger(device.attribute("RefDeviceType").value()),
+								charArrayToString(device.attribute("Name").value()),
+								charArrayToInteger(device.attribute("RefDivision").value())
+								);
+
+	device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","6");
+	VacuumCleaner *vacuumRobot = new VacuumCleaner(charArrayToInteger(device.attribute("ID").value()),
+								charArrayToInteger(device.attribute("RefDeviceType").value()),
+								charArrayToString(device.attribute("Name").value()),
+								charArrayToInteger(device.attribute("RefDivision").value())
+								);
+
+	device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","9");
+	UserSensor *bedroomUserSensor = new UserSensor(charArrayToInteger(device.attribute("ID").value()),
+								charArrayToInteger(device.attribute("RefDeviceType").value()),
+								charArrayToString(device.attribute("Name").value()),
+								charArrayToInteger(device.attribute("RefDivision").value()),
+								"Chandler","Monica");
+
+	bedroomUserSensor->setActive(true);
+	bedroomUserSensor->setCounter(2);
+	chandler->setCurrentDivision("bedroom");
+	monica->setCurrentDivision("bedroom");
+
+	int optionSelected;
+	int hours = 10;
+	int minutes = 0;
+	string dow = "Thursday";
+	string displayScenario1 = "---------------------------\n\nDomoBusSystem Simulator - Scenario 1:\n\n2.1.[1] System Status\n2.1.[2] Move User\n2.1.[3] Change Day of the Week\n2.1.[4] Change Current Time\n\n2.1.[0] Go back\n\nSelect an option: ";
+	while(true) {
+		optionSelected = getIntegerFromInput(displayScenario1);
+		if(optionSelected == 1) {
+			cout << "Day of the week: " << dow << "\nTime: " << hours << "H" << minutes << "\nChandler is in the " << chandler->getCurrentDivision() << "\nMonica is in the " << monica->getCurrentDivision() << "\n\n";
+		}
+		else if(optionSelected == 2){
+			string displayUsers =	"---------------------------\n\n2.1.[1] Chandler\n2.1.[2] Monica\n\n2.1.[0] Go back\n\nSelect an option: ";
+			while(true){
+				optionSelected = getIntegerFromInput(displayUsers);
+				if(optionSelected == 1){
+					string division;
+					cout << "Which division do you want to move him to [bedroom,kitchen,bathroom,lounge]: ";
+					cin >> division;
+					if(division.compare("bedroom") == 0 ){
+						if(chandler->getCurrentDivision().compare(division) != 0) {
+							bedroomUserSensor->incCounter();
+							chandler->setCurrentDivision(division);
+							if(vacuumRobot->isWorking()) {
+								cout << "Robot Vacuum Cleaner: User presence detected. Returning to station..\n\n";
+							}
+						}
+					}else {
+						if(chandler->getCurrentDivision().compare("bedroom") == 0)
+							bedroomUserSensor->decCounter();
+						chandler->setCurrentDivision(division);
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
+						}
+					}
+				} 
+				else if(optionSelected == 2){
+					string division;
+					cout << "Which division do you want to move him to [bedroom,kitchen,bathroom,lounge]: ";
+					cin >> division;
+					if(division.compare("bedroom") == 0 ){
+						if(monica->getCurrentDivision().compare(division) != 0) {
+							bedroomUserSensor->incCounter();
+							monica->setCurrentDivision(division);
+							if(vacuumRobot->isWorking()) {
+								cout << "Robot Vacuum Cleaner: User presence detected. Returning to station..\n\n";
+							}
+						}
+					}else {
+						if(monica->getCurrentDivision().compare("bedroom") == 0)
+							bedroomUserSensor->decCounter();
+						monica->setCurrentDivision(division);
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
+						}
+					}
+				}
+				else if(optionSelected == 0)
+					break;
+			} 
+		} 
+		else if(optionSelected == 2) {
+			while(true) {
+				hours = getIntegerFromInput("Please enter the desired hours [00-23]: ");
+				if(hours >= 0 && hours <= 23){
+					while(true) {
+						minutes = getIntegerFromInput("Please enter the desired minutes [00-59]: ");
+						if(minutes >= 0 && minutes <= 59)
+							break;
+						else {
+							cout << "ERROR: Input value out of minutes range.";
+							continue;
+						}
+					}
+				}
+				else {
+					cout << "ERROR: Input value out of hours range.";
+					continue;
+				}				
+			}
+			if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+				cout << "Robot Vacuum Cleaner: On working time. No user presence detected. Starting to vacuum...\n\n";
+			}
+			else if(vacuumRobot->isWorking() && (hours < 9 || hours > 12)) {
+				cout << "Robot Vacuum Cleaner: Reached end of working time. Returning to station...\n\n";
+			}
+		}
+		else if(optionSelected == 0)
+				return;
+	}
+
+}
+
+void simulateDomoBusSystem(xml_node domobus) {
+	int optionSelected;
+	string displaySim = "---------------------------\n\nDomoBusSystem Simulator:\n\n2.[1] Scenario 1.\n2.[2] Scenario 2.\n2.[3] Scenario 3.\n\n1.[0] Go back\n\nSelect an option: ";
+	while(true) {
+		optionSelected = getIntegerFromInput(displaySim);
+		if(optionSelected == 1){
+			initScenario1();
+			continue;
+		} 
+		else if(optionSelected == 0){
+			return;
+		}
+		else if(optionSelected == 2 || optionSelected == 3){
+			cout << "Functionality under construction. Please choose another option.\n";
+			continue;
+		}
+		else {
+			cout << "Invalid option selected. Please select an option using one of the numbers betwen []." << endl;
+		}
+	}
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -458,24 +633,20 @@ int main(int argc, char* argv[])
 		string display = "---------------------------\n\nMain Menu:\n\n[1] DomoBusSystem Manager.\n[2] DomoBusSystem Simulator\n\n[0] Exit\n\nSelect an option: ";
 		optionSelected = getIntegerFromInput(display);
 
-
 		// ENTERED DOMOBUSSYSTEM MANAGER
 		if(optionSelected == 1) {
 			manageDomoBusSystem(domobus);
 		}
 
-
 		// ENTERED DOMOBUSSYTEM SIMULATOR
 		else if(optionSelected == 2) {
-			
+			simulateDomoBusSystem(domobus);			
 		} 
-
 
 		// EXIT APPLICATION
 		else if(optionSelected == 0) {
 			exit(0);
 		}
-
 
 		// INVALID OPTION SELECTED
 		else {

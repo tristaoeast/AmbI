@@ -18,3 +18,11 @@ int User::getAccessLevel(){
 	return _accessLevel;
 }
 
+string User::getCurrentDivision(){
+	return _currentDivision;
+}
+
+void User::setCurrentDivision(string division){
+	_currentDivision = division;
+}
+
