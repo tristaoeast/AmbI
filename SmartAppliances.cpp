@@ -41,6 +41,11 @@ int charArrayToInteger(const char* value) {
 	return intValue;
 }
 
+string charArrayToString(const char* cstr) {
+	string str(cstr);
+	return str;
+}
+
 int getIntegerFromInput(string display) {
 	int integer;
 	while(true){
@@ -75,7 +80,8 @@ bool displayChildNodesForSelection(xml_node parent, string options, int &lastID)
 		if((emptyID.compare(child.attribute("ID").value())) != 0 && (emptyStr.compare(child.attribute("ID").value())) != 0) {
 			
 			lastID = charArrayToInteger(child.attribute("ID").value());
-			cout << options << "[" << child.attribute("ID").value() << "] " << child.name() <<":";
+
+			cout << "---------------------------\n\n" << options << "[" << (lastID + 1) << "] " << child.name() <<":";
 
 			for(xml_attribute attr = child.first_attribute(); attr; attr = attr.next_attribute()){
 				cout << " " << attr.name() << "=" << "\"" << attr.value() << "\"";
@@ -87,52 +93,179 @@ bool displayChildNodesForSelection(xml_node parent, string options, int &lastID)
 	return hasChildren;
 }
 
-bool chooseScalar(xml_node property){
+void displayAllChildNodes(xml_node parent) {
+
+	if((emptyID.compare(parent.first_child().attribute("ID").value())) == 0) {
+		cout << "No " << parent.first_child().name() << "elements defined.\n";
+	}
+	for(xml_node child = parent.first_child(); child; child = child.next_sibling()) {
+		if((emptyID.compare(child.attribute("ID").value())) != 0 && (emptyStr.compare(child.attribute("ID").value())) != 0) {
+
+			cout << child.name() <<":";
+
+			for(xml_attribute attr = child.first_attribute(); attr; attr = attr.next_attribute()){
+				cout << " " << attr.name() << "=" << "\"" << attr.value() << "\"";
+			}
+			cout << "\n";
+		}
+	}
+}
+
+bool chooseScalar(xml_node property, string &name, int &ID){
 	int lastID = -1;
 	int optionSelected;
 	while(true) {
 		if(displayChildNodesForSelection(domobus.child("ScalarValueTypeList"), "1.1.1.1.", lastID)) {
-			cout << "\n\n\n" << lastID << "\n\n\n";
+			// cout << "\n\n\n" << lastID << "\n\n\n";
+			cout << "\n1.1.1.1.[0] Cancel and go back\n\n";
 			optionSelected = getIntegerFromInput("Select an option: ");
-			xml_node chosenScalar = domobus.child("ScalarValueTypeList").find_child_by_attribute("ScalarValueType","ID",intToCharArray(optionSelected));
-			return true;
-		} 
+			if(optionSelected == 0) 
+				return false;
+			else if(optionSelected >= 1 && optionSelected <= (lastID +1)) {
+				xml_node chosenScalar = domobus.child("ScalarValueTypeList").find_child_by_attribute("ScalarValueType","ID",intToCharArray(optionSelected-1));
+				name = charArrayToString(chosenScalar.attribute("Name").value());
+				ID = charArrayToInteger(chosenScalar.attribute("ID").value());
+				return true;
+			}
+			else {
+				cout << "ERROR: Please select a valid option (one of the numbers between [] )\n\n";
+			}
+		}
 		else {
-			cout << "ERROR: No scalar types defined.";
+			cout << "ERROR: No SCALAR types defined.\n\n";
 			return false;
 		}
 	}
-
 }
 
-bool setValueType(xml_node property){
-	// string valueType;
+bool chooseEnum(xml_node property, string &name, int &ID){
+	int lastID = -1;
 	int optionSelected;
 	while(true) {
-		optionSelected = getIntegerFromInput("\n1.1.1.[1] SCALAR\n1.1.1.[2] ENUM\n1.1.1.[3] ARRAY\n1.1.1.[4] USERID\n\n1.1.1.[0] Cancel and go back\n\nSelect an option: ");
+		if(displayChildNodesForSelection(domobus.child("EnumValueTypeList"), "1.1.1.2.", lastID)) {
+			// cout << "\n\n\n" << lastID << "\n\n\n";
+			cout << "\n1.1.1.2.[0] Cancel and go back\n\n";
+			optionSelected = getIntegerFromInput("Select an option: ");
+			if(optionSelected == 0) 
+				return false;
+			else if(optionSelected >= 1 && optionSelected <= (lastID +1)) {
+				xml_node chosenEnum = domobus.child("EnumValueTypeList").find_child_by_attribute("EnumValueType","ID",intToCharArray(optionSelected-1));
+				name = charArrayToString(chosenEnum.attribute("Name").value());
+				ID = charArrayToInteger(chosenEnum.attribute("ID").value());
+				return true;
+			}
+			else {
+				cout << "ERROR: Please select a valid option (one of the numbers between [] )\n\n";
+			}
+		}
+		else {
+			cout << "ERROR: No ENUM types defined.\n\n";
+			return false;
+		}
+	}
+}
+
+bool chooseArray(xml_node property, string &name, int &ID){
+	int lastID = -1;
+	int optionSelected;
+	while(true) {
+		if(displayChildNodesForSelection(domobus.child("ArrayValueTypeList"), "1.1.1.3.", lastID)) {
+			// cout << "\n\n\n" << lastID << "\n\n\n";
+			cout << "\n1.1.1.3.[0] Cancel and go back\n\n";
+			optionSelected = getIntegerFromInput("Select an option: ");
+			if(optionSelected == 0) 
+				return false;
+			else if(optionSelected >= 1 && optionSelected <= (lastID +1)) {
+				xml_node chosenArray = domobus.child("ArrayValueTypeList").find_child_by_attribute("ArrayValueType","ID",intToCharArray(optionSelected-1));
+				name = charArrayToString(chosenArray.attribute("Name").value());
+				ID = charArrayToInteger(chosenArray.attribute("ID").value());
+				return true;
+			}
+			else {
+				cout << "ERROR: Please select a valid option (one of the numbers between [] )\n\n";
+			}
+		}
+		else {
+			cout << "ERROR: No ARRAY types defined.\n\n";
+			return false;
+		}
+	}
+}
+
+
+bool chooseUserID(xml_node property, string &name, int &ID){
+	int lastID = -1;
+	int optionSelected;
+	while(true) {
+		if(displayChildNodesForSelection(domobus.child("UserIDValueTypeList"), "1.1.1.4.", lastID)) {
+			// cout << "\n\n\n" << lastID << "\n\n\n";
+			cout << "\n1.1.1.4.[0] Cancel and go back\n\n";
+			optionSelected = getIntegerFromInput("Select an option: ");
+			if(optionSelected == 0) 
+				return false;
+			else if(optionSelected >= 1 && optionSelected <= (lastID +1)) {
+				xml_node chosenUserID = domobus.child("UserIDValueTypeList").find_child_by_attribute("UserIDValueType","ID",intToCharArray(optionSelected-1));
+				name = charArrayToString(chosenUserID.attribute("UserName").value());
+				ID = charArrayToInteger(chosenUserID.attribute("ID").value());
+				return true;
+			}
+			else {
+				cout << "ERROR: Please select a valid option (one of the numbers between [] )\n\n";
+			}
+		}
+		else {
+			cout << "ERROR: No USERID types defined.\n\n";
+			return false;
+		}
+	}
+}
+
+bool selectValueType(xml_node property, string &propertyName, int &propertyID, string &propertyValueType) {
+	// string valueType;
+	int optionSelected;
+	int typeID;
+	string typeName, valueType;
+
+	while(true) {
+		optionSelected = getIntegerFromInput("---------------------------\n\n1.1.1.[1] SCALAR\n1.1.1.[2] ENUM\n1.1.1.[3] ARRAY\n1.1.1.[4] USERID\n\n1.1.1.[0] Cancel and go back\n\nSelect an option: ");
 		// cout << "Enter a value type [SCALAR, ENUM, ARRAY or USERID]: ";
 		// cin >> valueType;
 		if(optionSelected == 1){
-			cout << "\n\nSCALAR\n\n";
-			if(chooseScalar(property)){
+			if(chooseScalar(property, typeName, typeID)){
+				propertyName = typeName;
+				propertyID = typeID;
+				propertyValueType="SCALAR";
 				return true;
 			}else
-				break;
+				continue;
 		}
 		else if(optionSelected == 2){
-			cout << "\n\nENUM\n\n";
-			return true;
-			// break;
+			if(chooseEnum(property, typeName, typeID)){
+				propertyName = typeName;
+				propertyID = typeID;
+				propertyValueType="ENUM";
+				return true;
+			}else
+				continue;
 		}
 		else if(optionSelected == 3){
-			cout << "\n\nARRAY\n\n";
-			return true;
-			// break;
+			if(chooseArray(property, typeName, typeID)){
+				propertyName = typeName;
+				propertyID = typeID;
+				propertyValueType="ARRAY";
+				return true;
+			}else
+				continue;
 		}
 		else if(optionSelected == 4){
 			cout << "\n\nUSERID\n\n";
-			return true;
-			// break;
+			if(chooseUserID(property, typeName, typeID)){
+				propertyName = typeName;
+				propertyID = typeID;
+				propertyValueType="SCALAR";
+				return true;
+			}else
+				continue;
 		}
 		else if(optionSelected == 0){
 			cout << "\n\nEXIT\n\n";
@@ -155,11 +288,14 @@ void addDeviceToDBS(xml_node domobus) {
 
 	string deviceName;
 	string description;
+	// Cleaning cin;
 	string dummy;
 	getline(cin, dummy);
+
 	cout << "Please enter the device name: ";
 	getline(cin, deviceName);
 	device.append_attribute("Name") = strToCharArray(deviceName);
+	device.append_attribute("RefDeviceClass") = strToCharArray("#");
 	
 	cout << "Please enter a description for the device " + deviceName + ": ";
 	getline(cin, description);
@@ -172,12 +308,27 @@ void addDeviceToDBS(xml_node domobus) {
 	ptl.set_name("PropertyTypeList");
 	// Add one or more properties to device
 	while(true) {
-		optionSelected = getIntegerFromInput("\n1.1.[1] Add Property to Device\n1.1.[2] Finish\n\n1.1.[0] Cancel and go back\n\nSelect an option: ");
+		optionSelected = getIntegerFromInput("---------------------------\n\n1.1.[1] Add Property to Device\n1.1.[2] Finish\n\n1.1.[0] Cancel and go back\n\nSelect an option: ");
 		if(optionSelected == 1) {
 			xml_node property = ptl.append_child();
 			property.set_name("PropertyType");
 			property.append_attribute("ID") = ++propCounter;
-			setValueType(property);
+			string propertyName, propertyValueType;
+			int propertyID;
+			if(selectValueType(property, propertyName, propertyID, propertyValueType)) {
+				property.append_attribute("Name") = strToCharArray(propertyName);
+				string accesMode;
+				cout << "Please enter desired property's access mode [RO, WO or RW]: ";
+				cin >> accesMode;
+				property.append_attribute("AccessMode") = strToCharArray(accesMode);
+				property.append_attribute("ValueType") = strToCharArray(propertyValueType);
+				property.append_attribute("RefValueType") = intToCharArray(propertyID);
+			} else {
+				ptl.remove_child(property);
+				propCounter--;
+				continue;
+			}
+
 			continue;
 		}
 		else if(optionSelected == 2) {
@@ -240,8 +391,9 @@ void addUserToDBS(xml_node domobus) {
 
 void manageDomoBusSystem(xml_node domobus) {
 	int optionSelected;
+	xml_node fl = domobus.child("House").child("FloorList");
 	while(true) {
-		string display1 =  "---------------------------\n\nDomoBusSystem Manager:\n\n1.[1] Add User\n1.[2] Add Device\n1.[3] Add Activity Scenario\n1.[4] Remove User\n1.[5] Remove Device\n1.[6] Remove Activity Scenario\n\n1.[0] Go back\n\nSelect an option: ";
+		string display1 =  "---------------------------\n\nDomoBusSystem Manager:\n\n1.[1] Add User\n1.[2] Add DeviceType\n1.[3] Add Floor\n1.[4] Add Division\n1.[5] List Users\n1.[6] List DeviceTypes\n1.[7] List Floors\n1.[8] List Divisions\n\n1.[0] Go back\n\nSelect an option: ";
 		optionSelected = getIntegerFromInput(display1);
 			switch(optionSelected) {
 				case 1:
@@ -250,8 +402,24 @@ void manageDomoBusSystem(xml_node domobus) {
 				case 2:
 					addDeviceToDBS(domobus);
 					break;
+				case 5:
+					displayAllChildNodes(domobus.child("UserList"));
+					break;
+				case 6:
+					displayAllChildNodes(domobus.child("DeviceTypeList"));
+					break;
+				case 7:
+					displayAllChildNodes(domobus.child("House").child("FloorList"));
+					break;
+				case 8:
+					for(xml_node f = fl.first_child(); f; f = f.next_sibling())
+						displayAllChildNodes(f.child("DivisionList"));
+					break;
 				case 0:
 					return;
+				default:
+					cout << "Functionality under construction. Please choose another option.\n";
+					continue;
 			}
 	}
 }
@@ -259,30 +427,29 @@ void manageDomoBusSystem(xml_node domobus) {
 int main(int argc, char* argv[])
 {
 
-	// xml_document doc;
 	char* docToLoad;
-
 	if(argc > 1)
 		docToLoad = strToCharArray(argv[1]);
 	else
 		docToLoad = strToCharArray(specFilename);
 
 	xml_parse_result result = doc.load_file(docToLoad, pugi::parse_full);
-
 	string nerr = "No error";
 	if(nerr.compare(result.description())) 
 	{
 		cout << "ERROR: Error loading document " << docToLoad << ". Exiting." << endl;
 		exit(1);
 	}
-
-	// xml_node 
+	
 	domobus = doc.child("DomoBusSystem");
 	xml_node evtl = domobus.child("EnumValueTypeList");
 	xml_node evt = domobus.child("EnumValueType");
 	
 	deviceIDCounter = charArrayToInteger(domobus.child("DeviceTypeList").last_child().attribute("ID").value());
 	userIDCounter = charArrayToInteger(domobus.child("UserList").last_child().attribute("ID").value());
+
+	// int id;
+	// displayChildNodesForSelection(domobus.child("ScalarValueTypeList"), "0.", id);
 
 	cout << endl << "Welcome to DomoBusSystem " << "Project : " << domobus.attribute("Name").value() << " - " << domobus.attribute("Type").value() << " Simulator - Version: " << domobus.attribute("Version").value() << endl << endl;
 

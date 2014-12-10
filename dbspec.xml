@@ -27,6 +27,10 @@
 	<!-- Property Types -->
 	<ScalarValueTypeList>
 		<!-- NumBits: 8 or 16 -->
+		<ScalarValueType ID="0" Name="Brightness" NumBits="16" Units="lumen" MinValue="0" MaxValue="2400" Step="100">
+			<ValueConversion Type="x" Ref="#" />
+			<!-- Type: "FORMULA" or "OBJECT" -->
+		</ScalarValueType>
 		<ScalarValueType ID="#" Name="x" NumBits="#" Units="x" MinValue="#" MaxValue="#" Step="#">
 			<ValueConversion Type="x" Ref="#" />
 			<!-- Type: "FORMULA" or "OBJECT" -->
