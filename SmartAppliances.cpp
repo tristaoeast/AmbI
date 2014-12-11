@@ -11,6 +11,7 @@
 #include "Sensor.h"
 #include "VacuumCleaner.h"
 #include "UserSensor.h"
+#include "WashingMachine.h"
 
 using namespace std;
 using namespace pugi;
@@ -598,6 +599,104 @@ void initScenario1() {
 
 }
 
+
+void initScenario2() {
+
+	xml_node device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","0");
+	WashingMachine *laundryMachine = new WashingMachine(charArrayToInteger(device.attribute("ID").value()),
+								charArrayToInteger(device.attribute("RefDeviceType").value()),
+								charArrayToString(device.attribute("Name").value()),
+								charArrayToInteger(device.attribute("RefDivision").value())
+								);
+
+	// device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","6");
+	// WashingMachine *clothesDryingMachine = new WashingMachine(charArrayToInteger(device.attribute("ID").value()),
+	// 							charArrayToInteger(device.attribute("RefDeviceType").value()),
+	// 							charArrayToString(device.attribute("Name").value()),
+	// 							charArrayToInteger(device.attribute("RefDivision").value())
+	// 							);
+
+	// device = domobus.child("DeviceList").find_child_by_attribute("Device","ID","9");
+	// WashingMachine *dishWasher = new WashingMachine(charArrayToInteger(device.attribute("ID").value()),
+	// 							charArrayToInteger(device.attribute("RefDeviceType").value()),
+	// 							charArrayToString(device.attribute("Name").value()),
+	// 							charArrayToInteger(device.attribute("RefDivision").value()),
+	// 							"Chandler","Monica");
+
+	// bedroomUserSensor->setActive(true);
+	// bedroomUserSensor->setCounter(2);
+	// chandler->setCurrentDivision("bedroom");
+	// monica->setCurrentDivision("bedroom");
+
+	int initTime = charArrayToInteger(domobus.child("ActivityScenarioList").find_child_by_attribute("ActivityScenario","ID","1").child("ActivationCondition").attribute("Time").value());
+	int stopTime = charArrayToInteger(domobus.child("ActivityScenarioList").find_child_by_attribute("ActivityScenario","ID","1").child("StoppageCondition").attribute("Time").value());
+
+	// cout << "\n\n\n" << initTime << "\n\n\n" << stopTime << "\n\n\n";
+
+	int optionSelected;
+	int hours = 10;
+	int minutes = 30;
+	int curTime = 1030;
+	string dow = "Thursday";
+	string displayScenario1 = "---------------------------\n\nDomoBusSystem Simulator - Scenario 2:\n\n2.1.[1] System Status\n2.1.[2] Load Laundry Machine\n2.1.[3] Unload Laundry Machine\n2.1.[4] Change Current Time\n\n2.1.[0] Go back\n\nSelect an option: ";
+	while(true) {
+		optionSelected = getIntegerFromInput(displayScenario1);
+		if(optionSelected == 1) {
+			cout << "Day of the week: " << dow;
+			cout << "\nTime: " << setfill('0') << setw(2) << hours << "H";
+			cout << setfill('0') << setw(2) << minutes;
+			cout << "\nLaundry Machine Work Status: " << laundryMachine->isWorking() << "\nLaundry Machine Load Status: " << laundryMachine->isLoaded() << "\n\n";
+		}
+		else if(optionSelected == 2){
+			laundryMachine->setLoaded(true);
+			cout << "Laundry Machine Loaded\n";
+
+		} 
+		else if(optionSelected == 3){
+			laundryMachine->setLoaded(false);
+			cout << "Laundry Machine unloaded\n";
+		}
+		else if(optionSelected == 4) {
+			while(true) {
+				curTime = getIntegerFromInput("Please enter the desired time [HHMM]: ");
+				hours = curTime/100;
+				minutes = curTime%100;
+				if(!(0 <= hours && hours <= 23)) {
+					// while(true) {
+					// 	minutes = getIntegerFromInput("Please enter the desired minutes [00-59]: ");
+					// 	if(minutes >= 0 && minutes <= 59)
+					// 		break;
+					// 	else {
+					// 		cout << "ERROR: Input value out of minutes range.\n";
+					// 		continue;
+					// 	}
+					// }
+					cout << "ERROR: Input value HH out of hours range.\n";
+					continue;
+				}
+				else if(!(0 <= minutes && minutes <= 59)) {
+					cout << "ERROR: Input value MM out of minutess range.\n";
+					continue;
+				} else
+					break;			
+			}
+			if(!laundryMachine->isWorking() && laundryMachine->isLoaded() && !(stopTime < curTime && curTime < initTime)) {
+				laundryMachine->setWorking(true);
+				cout << "Laundry Machine: On working time. Machine is loaded. Starting to wash...\n\n";
+			}
+			else if(laundryMachine->isWorking() && (stopTime < curTime && curTime < initTime)) {
+				laundryMachine->setWorking(false);
+				laundryMachine->setLoaded(false);
+				cout << "Robot Vacuum Cleaner: Reached end of working time. Stopping at the end of the program...\n\n";
+			}
+		}
+		else if(optionSelected == 0)
+				return;
+	}
+
+}
+
+
 void simulateDomoBusSystem(xml_node domobus) {
 	int optionSelected;
 	string displaySim = "---------------------------\n\nDomoBusSystem Simulator:\n\n2.[1] Scenario 1.\n2.[2] Scenario 2.\n\n1.[0] Go back\n\nSelect an option: ";
@@ -611,6 +710,7 @@ void simulateDomoBusSystem(xml_node domobus) {
 			return;
 		}
 		else if(optionSelected == 2){
+			initScenario2();
 			cout << "Functionality under construction. Please choose another option.\n";
 			continue;
 		}
