@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sstream>
 #include <vector>
+#include <iomanip>
 #include "User.h"
 #include "Sensor.h"
 #include "VacuumCleaner.h"
@@ -485,15 +486,24 @@ void initScenario1() {
 	chandler->setCurrentDivision("bedroom");
 	monica->setCurrentDivision("bedroom");
 
+	int initTime = charArrayToInteger(domobus.child("ActivityScenarioList").find_child_by_attribute("ActivityScenario","ID","0").child("ActivationCondition").attribute("Time").value());
+	int stopTime = charArrayToInteger(domobus.child("ActivityScenarioList").find_child_by_attribute("ActivityScenario","ID","0").child("StoppageCondition").attribute("Time").value());
+
+	// cout << "\n\n\n" << initTime << "\n\n\n" << stopTime << "\n\n\n";
+
 	int optionSelected;
 	int hours = 10;
 	int minutes = 30;
+	int curTime = 1030;
 	string dow = "Thursday";
 	string displayScenario1 = "---------------------------\n\nDomoBusSystem Simulator - Scenario 1:\n\n2.1.[1] System Status\n2.1.[2] Move User\n2.1.[3] Change Day of the Week\n2.1.[4] Change Current Time\n\n2.1.[0] Go back\n\nSelect an option: ";
 	while(true) {
 		optionSelected = getIntegerFromInput(displayScenario1);
 		if(optionSelected == 1) {
-			cout << "Day of the week: " << dow << "\nTime: " << hours << "H" << minutes << "\nChandler is in the " << chandler->getCurrentDivision() << "\nMonica is in the " << monica->getCurrentDivision() << "\nBedroom UserSensor Status: " << bedroomUserSensor->isActive() << "\nBedroom UserSensor Counter: " << bedroomUserSensor->getCounter() << "\nRobot Vacuum Cleaner Status: " << vacuumRobot->isWorking() << "\n\n";
+			cout << "Day of the week: " << dow;
+			cout << "\nTime: " << setfill('0') << setw(2) << hours << "H";
+			cout << setfill('0') << setw(2) << minutes;
+			cout << "\nChandler is in the " << chandler->getCurrentDivision() << "\nMonica is in the " << monica->getCurrentDivision() << "\nBedroom UserSensor Status: " << bedroomUserSensor->isActive() << "\nBedroom UserSensor Counter: " << bedroomUserSensor->getCounter() << "\nRobot Vacuum Cleaner Status: " << vacuumRobot->isWorking() << "\n\n";
 		}
 		else if(optionSelected == 2){
 			string displayUsers =	"---------------------------\n\n2.1.[1] Chandler\n2.1.[2] Monica\n\n2.1.[0] Go back\n\nSelect an option: ";
@@ -516,7 +526,7 @@ void initScenario1() {
 						if(chandler->getCurrentDivision().compare("bedroom") == 0)
 							bedroomUserSensor->decCounter();
 						chandler->setCurrentDivision(division);
-						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(stopTime < curTime && curTime < initTime)) {
 							vacuumRobot->setWorking(true);
 							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
 						}
@@ -539,7 +549,7 @@ void initScenario1() {
 						if(monica->getCurrentDivision().compare("bedroom") == 0)
 							bedroomUserSensor->decCounter();
 						monica->setCurrentDivision(division);
-						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(stopTime < curTime && curTime < initTime)) {
 							vacuumRobot->setWorking(true);
 							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
 						}
@@ -551,29 +561,33 @@ void initScenario1() {
 		} 
 		else if(optionSelected == 4) {
 			while(true) {
-				hours = getIntegerFromInput("Please enter the desired hours [00-23]: ");
-				if(hours >= 0 && hours <= 23){
-					while(true) {
-						minutes = getIntegerFromInput("Please enter the desired minutes [00-59]: ");
-						if(minutes >= 0 && minutes <= 59)
-							break;
-						else {
-							cout << "ERROR: Input value out of minutes range.\n";
-							continue;
-						}
-					}
-					break;
-				}
-				else {
-					cout << "ERROR: Input value out of hours range.\n";
+				curTime = getIntegerFromInput("Please enter the desired time [HHMM]: ");
+				hours = curTime/100;
+				minutes = curTime%100;
+				if(!(0 <= hours && hours <= 23)) {
+					// while(true) {
+					// 	minutes = getIntegerFromInput("Please enter the desired minutes [00-59]: ");
+					// 	if(minutes >= 0 && minutes <= 59)
+					// 		break;
+					// 	else {
+					// 		cout << "ERROR: Input value out of minutes range.\n";
+					// 		continue;
+					// 	}
+					// }
+					cout << "ERROR: Input value HH out of hours range.\n";
 					continue;
-				}				
+				}
+				else if(!(0 <= minutes && minutes <= 59)) {
+					cout << "ERROR: Input value MM out of minutess range.\n";
+					continue;
+				} else
+					break;			
 			}
-			if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
+			if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(stopTime < curTime && curTime < initTime)) {
 				vacuumRobot->setWorking(true);
 				cout << "Robot Vacuum Cleaner: On working time. No user presence detected. Starting to vacuum...\n\n";
 			}
-			else if(vacuumRobot->isWorking() && (9 < hours && hours < 21)) {
+			else if(vacuumRobot->isWorking() && (stopTime < curTime && curTime < initTime)) {
 				vacuumRobot->setWorking(false);
 				cout << "Robot Vacuum Cleaner: Reached end of working time. Returning to station...\n\n";
 			}
