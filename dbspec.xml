@@ -246,7 +246,9 @@
 	<DeviceStateList>
 		<DeviceState RefDevice="#" RefProperty="#" Value="x" OperationalStatus="#" />
 	</DeviceStateList>
-	<!-- DOW representes the days of the week, being its representation binary in the sense that it is done using 7 bits: DOW=”Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday" 
+	<!-- DOW representes the days of the week, being its representation binary in the sense that it is done using 7 bits: 
+	Time="HHMM"
+	DOW=”Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday" 
 	(i.e. if we want to select Tuesdays, Thursdays and Saturdays all we have to do is DOW="0|0|1|0|1|0|1") -->
 	<ActivityScenarioList>
 		<ActivityScenario ID="0" Name="Bedroom Robot Vacuum Cleaner" Description="x">
@@ -262,7 +264,7 @@
 					<DeviceState RefDevice="9" RefProperty="2" Value="#" />
 				</DeviceStateList>
 				<ActionList>
-					<Action RefDevice="3" RefProperty="0" Value="1" />
+					<Action RefDevice="6" RefProperty="0" Value="1" />
 				</ActionList>
 			</ActivationCondition>
 			<StoppageCondition Time="0900" DOW="#|#|#|#|#|#|#">
@@ -270,7 +272,7 @@
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
 				<ActionList>
-					<Action RefDevice="3" RefProperty="0" Value="0" />
+					<Action RefDevice="6" RefProperty="0" Value="0" />
 				</ActionList>
 			</StoppageCondition>
 			<ExceptionCondition>
