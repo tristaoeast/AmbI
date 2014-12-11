@@ -249,35 +249,23 @@
 	<!-- DOW representes the days of the week, being its representation binary in the sense that it is done using 7 bits: DOW=”Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday" 
 	(i.e. if we want to select Tuesdays, Thursdays and Saturdays all we have to do is DOW="0|0|1|0|1|0|1") -->
 	<ActivityScenarioList>
-		<ActivityScenario ID="0" Name="Robot Vacuum Cleaner" Description="x">
-			<PreCondition Time="#" DOW="0|0|1|0|1|0|1">
+		<ActivityScenario ID="0" Name="Bedroom Robot Vacuum Cleaner" Description="x">
+			<PreCondition Time="#" DOW="0|1|0|0|1|0|0">
 				<DeviceStateList>
-					<DeviceState RefDevice="3" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="4" RefProperty="0" Value="1" />
 					<DeviceState RefDevice="5" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="6" RefProperty="0" Value="1" />
 				</DeviceStateList>
 			</PreCondition>
-			<ActivationCondition Time="0900" DOW="#|#|#|#|#|#|#">
+			<ActivationCondition Time="2100" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
-					<DeviceState RefDevice="7" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
-					<DeviceState RefDevice="8" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="8" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="8" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="0" Value="0" />
 					<DeviceState RefDevice="9" RefProperty="1" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="2" Value="#" />
-					<DeviceState RefDevice="10" RefProperty="0" Value="0" />
-					<DeviceState RefDevice="10" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="10" RefProperty="2" Value="#" />
 				</DeviceStateList>
 				<ActionList>
 					<Action RefDevice="3" RefProperty="0" Value="1" />
 				</ActionList>
 			</ActivationCondition>
-			<StoppageCondition Time="1200" DOW="#|#|#|#|#|#|#">
+			<StoppageCondition Time="0900" DOW="#|#|#|#|#|#|#">
 				<DeviceStateList>
 					<DeviceState RefDevice="#" RefProperty="#" Value="#" />
 				</DeviceStateList>
@@ -287,18 +275,9 @@
 			</StoppageCondition>
 			<ExceptionCondition>
 				<DeviceStateList>
-					<DeviceState RefDevice="7" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="7" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="7" RefProperty="2" Value="#" />
-					<DeviceState RefDevice="8" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="8" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="8" RefProperty="2" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="0" Value="1" />
 					<DeviceState RefDevice="9" RefProperty="1" Value="#" />
 					<DeviceState RefDevice="9" RefProperty="2" Value="#" />
-					<DeviceState RefDevice="10" RefProperty="0" Value="1" />
-					<DeviceState RefDevice="10" RefProperty="1" Value="#" />
-					<DeviceState RefDevice="10" RefProperty="2" Value="#" />
 				</DeviceStateList>
 				<ActionList>
 					<Action RefDevice="3" RefProperty="0" Value="0" />

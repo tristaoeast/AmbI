@@ -487,7 +487,7 @@ void initScenario1() {
 
 	int optionSelected;
 	int hours = 10;
-	int minutes = 0;
+	int minutes = 30;
 	string dow = "Thursday";
 	string displayScenario1 = "---------------------------\n\nDomoBusSystem Simulator - Scenario 1:\n\n2.1.[1] System Status\n2.1.[2] Move User\n2.1.[3] Change Day of the Week\n2.1.[4] Change Current Time\n\n2.1.[0] Go back\n\nSelect an option: ";
 	while(true) {
@@ -516,7 +516,7 @@ void initScenario1() {
 						if(chandler->getCurrentDivision().compare("bedroom") == 0)
 							bedroomUserSensor->decCounter();
 						chandler->setCurrentDivision(division);
-						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
 							vacuumRobot->setWorking(true);
 							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
 						}
@@ -539,7 +539,7 @@ void initScenario1() {
 						if(monica->getCurrentDivision().compare("bedroom") == 0)
 							bedroomUserSensor->decCounter();
 						monica->setCurrentDivision(division);
-						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+						if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
 							vacuumRobot->setWorking(true);
 							cout << "Robot Vacuum Cleaner: No user presence detected. Returning to work...\n\n";
 						}
@@ -569,11 +569,11 @@ void initScenario1() {
 					continue;
 				}				
 			}
-			if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && hours > 9 && hours < 12){
+			if(!vacuumRobot->isWorking() && !bedroomUserSensor->isActive() && !(9 < hours && hours < 21)) {
 				vacuumRobot->setWorking(true);
 				cout << "Robot Vacuum Cleaner: On working time. No user presence detected. Starting to vacuum...\n\n";
 			}
-			else if(vacuumRobot->isWorking() && (hours < 9 || hours > 12)) {
+			else if(vacuumRobot->isWorking() && (9 < hours && hours < 21)) {
 				vacuumRobot->setWorking(false);
 				cout << "Robot Vacuum Cleaner: Reached end of working time. Returning to station...\n\n";
 			}
