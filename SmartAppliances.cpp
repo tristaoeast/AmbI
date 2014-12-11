@@ -600,7 +600,7 @@ void initScenario1() {
 
 void simulateDomoBusSystem(xml_node domobus) {
 	int optionSelected;
-	string displaySim = "---------------------------\n\nDomoBusSystem Simulator:\n\n2.[1] Scenario 1.\n2.[2] Scenario 2.\n2.[3] Scenario 3.\n\n1.[0] Go back\n\nSelect an option: ";
+	string displaySim = "---------------------------\n\nDomoBusSystem Simulator:\n\n2.[1] Scenario 1.\n2.[2] Scenario 2.\n\n1.[0] Go back\n\nSelect an option: ";
 	while(true) {
 		optionSelected = getIntegerFromInput(displaySim);
 		if(optionSelected == 1){
@@ -610,12 +610,12 @@ void simulateDomoBusSystem(xml_node domobus) {
 		else if(optionSelected == 0){
 			return;
 		}
-		else if(optionSelected == 2 || optionSelected == 3){
+		else if(optionSelected == 2){
 			cout << "Functionality under construction. Please choose another option.\n";
 			continue;
 		}
 		else {
-			cout << "Invalid option selected. Please select an option using one of the numbers betwen []." << endl;
+			cout << "Invalid option selected. Please select an option using one of the numbers betwen [].\n";
 		}
 	}
 }
